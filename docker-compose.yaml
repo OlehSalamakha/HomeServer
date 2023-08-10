@@ -37,7 +37,8 @@ services:
       - mysql_data:/var/lib/mysql
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
-image: nextcloud
+  nextcloud: 
+    image: nextcloud
     restart: always
     ports:
       - 6545:443
