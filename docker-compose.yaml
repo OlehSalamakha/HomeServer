@@ -1,0 +1,18 @@
+services:
+   mysql:
+      image: mysql
+      volumes:
+        - mysql_data:/var/lib/mysql
+      environment: 
+        MYSQL_ROOT_PASSWORD: 123123 
+        #MYSQL_DATABASE: 
+        MYSQL_USER: osalamakha
+        MYSQL_PASSWORD: 123123
+
+
+volumes:
+  mysql_data:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /mnt/storage/containers/mysql
+      
