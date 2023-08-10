@@ -1,18 +1,52 @@
+version: '3.8'
 services:
-   mysql:
-      image: mysql
-      volumes:
-        - mysql_data:/var/lib/mysql
-      environment: 
-        MYSQL_ROOT_PASSWORD: 123123 
-        #MYSQL_DATABASE: 
-        MYSQL_USER: osalamakha
-        MYSQL_PASSWORD: 123123
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+    environment:
+      # Mysql/Maria connection parameters:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+      # Uncomment this if IPv6 is not enabled on your host
+      # DISABLE_IPV6: 'true'
+    volumes:
+      - nginx_data:/data
+      - lets_encrypt_data:/etc/letsencrypt
+    depends_on:
+      - db
 
-
+  db:
+    image: 'jc21/mariadb-aria:latest'
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - mysql_data:/var/lib/mysql
 volumes:
   mysql_data:
     driver: local-persist
     driver_opts:
       mountpoint: /mnt/storage/containers/mysql
+  nginx_data:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /mnt/storage/containers/nginx_data
+  lets_encrypt_data:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /mnt/storage/containers/lets_encrypt_data
+  
       
