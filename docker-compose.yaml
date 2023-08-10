@@ -35,7 +35,7 @@ services:
       MYSQL_PASSWORD: 'npm'
     volumes:
       - mysql_data:/var/lib/mysql
-      ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
 image: nextcloud
     restart: always
