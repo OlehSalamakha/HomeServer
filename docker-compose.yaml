@@ -35,6 +35,21 @@ services:
       MYSQL_PASSWORD: 'npm'
     volumes:
       - mysql_data:/var/lib/mysql
+      ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+image: nextcloud
+    restart: always
+    ports:
+      - 6545:443
+    volumes:
+      - nextcloud_data:/var/www/html
+    environment:
+      - MYSQL_PASSWORD: 'nextcloud'
+      - MYSQL_DATABASE: 'nextcloud_database'
+      - MYSQL_USER: 'nextcloud'
+      - MYSQL_HOST=db
+    depends_on:
+      - nextcloud_database
 volumes:
   mysql_data:
     driver: local-persist
@@ -48,5 +63,9 @@ volumes:
     driver: local-persist
     driver_opts:
       mountpoint: /mnt/storage/containers/lets_encrypt_data
+  nextcloud_data:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /mnt/storage/containers/nextcloud_data
   
       
