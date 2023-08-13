@@ -26,7 +26,7 @@ services:
       - db
 
   db:
-    image: 'jc21/mariadb-aria:latest'
+    image: 'jc21/mariadb-aria:10.4.15-innodb'
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: 'npm'
@@ -37,21 +37,49 @@ services:
       - mysql_data:/var/lib/mysql
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
   nextcloud: 
     image: nextcloud
     restart: always
     ports:
-      - 6545:443
+      - 9090:80
     volumes:
       - nextcloud_data:/var/www/html
     environment:
-      - MYSQL_PASSWORD: 'nextcloud'
-      - MYSQL_DATABASE: 'nextcloud_database'
-      - MYSQL_USER: 'nextcloud'
-      - MYSQL_HOST=db
+      NEXTCLOUD_TRUSTED_DOMAINS: 'https://www.cloud.homelviv.duckdns.org'
+      MYSQL_PASSWORD: 'nextcloud_password'
+      MYSQL_DATABASE: 'NEXT_CLOU_DATABASE'
+      MYSQL_USER: 'nextcloud'
     depends_on:
-      - nextcloud_database
+      - db
+
+   mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    volumes:
+      - mosquitto:/mosquitto
+      - mosquitto_data:/mosquitto/data
+      - mosquito_logs:/mosquitto/log
+    ports:
+      - 1883:1883
+      - 9001:9001  
 volumes:
+  mosquitto:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /mnt/storage/containers/mosquitto/
+  mosquitto_data:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /mnt/storage/containers/mosquitto/data
+  mosquitto_logs:
+    driver: local-persist
+    driver_opts:
+      mountpoint: /mnt/storage/containers/mosquitto/log
   mysql_data:
     driver: local-persist
     driver_opts:
